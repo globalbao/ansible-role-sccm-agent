@@ -1,0 +1,7 @@
+---
+# defaults file for SCCM
+sccm_agent_windows_file_path: https://
+smssitecode: xyz
+fsp: xyz
+smsmp: xyz
+sccm_install_cmd: C:\Windows\Temp\ccmsetup\ccmsetup.exe SMSSITECODE="{{ smssitecode }}" FSP="{{ fsp }}" SMSMP="{{ smsmp }}" /source:C:\temp\ccmsetup

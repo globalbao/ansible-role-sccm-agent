@@ -1,0 +1,67 @@
+---
+- name: Check if SCCM is installed on windows remote target
+  changed_when: not initial_verification_service_status.exists
+  become_method: runas
+  win_service:
+    name: SMS Agent Host
+  register: initial_verification_service_status
+  tags:
+    - initialverification
+ 
+- name: "Download SCCM binaries to windows remote target"
+  when: not initial_verification_service_status.exists
+  become_method: runas
+  win_get_url:
+    url: "{{ sccm_agent_windows_file_path }}"
+    dest: "C:/Windows/Temp"
+  register: sccm_agent_download
+  failed_when: sccm_agent_download.failed
+  tags:
+    - download
+
+- name: "Unzip SCCM binaries to windows remote target"
+  when: sccm_agent_download is not skipped
+  win_unzip:
+    src: "C:/Windows/Temp/ccmsetup.zip"
+    dest: "C:/Windows/Temp"
+    delete_archive: yes
+  register: sccm_agent_unzip
+  failed_when: sccm_agent_unzip.failed
+  tags:
+    - unzip
+
+- name: "Install SCCM agent to windows remote target"
+  when: not initial_verification_service_status.exists and not sccm_agent_unzip.failed
+  become_method: runas
+  win_shell: "{{ sccm_install_cmd }}"
+  register: install_status
+  failed_when: install_status.rc != 0
+  tags:
+    - install
+
+- name: "Wait for SCCM agent installation to complete"
+  when: install_status is not skipped
+  win_wait_for:
+      timeout: 120
+  tags:
+    - wait
+
+- name: "Verify if SCCM service is running on windows remote target"
+  when: install_status is not skipped and install_status.rc == 0
+  become_method: runas
+  win_service:
+    name: SMS Agent Host
+  register: final_verification_service_status
+  failed_when: final_verification_service_status.failed
+  tags:
+    - finalverification
+  
+- name: "Cleanup SCCM binaries from windows remote target"
+  when: final_verification_service_status is not skipped
+  become_method: runas
+  win_file:
+    path: "C:/Windows/Temp/ccmsetup"
+    state: absent
+  register: cleanup_sccm_agent_binaries
+  tags:
+    - cleanup

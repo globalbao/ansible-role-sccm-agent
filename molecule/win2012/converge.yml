@@ -1,0 +1,6 @@
+- name: Converge
+  hosts: win2012
+  tasks:
+    - name: "Include ansible-role-sccm-agent"
+      include_role:
+        name: "ansible-role-sccm-agent"

@@ -1,0 +1,10 @@
+ansible>=2.9.12
+ansible[azure]
+ansible-lint>=4.2.0
+molecule>=3.0.6
+molecule-azure>=0.3
+yamllint>=1.24.2
+pywinrm>=0.4.1
+junit-xml>=1.9
+requests>=2.24.0
+wheel>=0.30.0

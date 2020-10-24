@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: win2012
+  gather_facts: true
+  tasks:
+   - name: print OS version
+     debug:
+      msg: "{{ ansible_facts['distribution'] }}"

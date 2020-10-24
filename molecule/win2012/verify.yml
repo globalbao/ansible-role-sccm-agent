@@ -1,0 +1,13 @@
+---
+# This is an example playbook to execute Ansible tests.
+- name: Verify
+  hosts: win2012
+  tasks:
+  - name: Inspect SCCM facts
+    win_stat:
+      path: 'C:\windows\ccmsetup\ccmsetup.exe'
+    register: status
+
+  - name: Verify SCCM agent is installed
+    assert:
+      that: "status.stat.exists is true"

@@ -1,0 +1,31 @@
+---
+# handlers file for SCCM
+- name: start SCCM Agent
+  win_service:
+    name: SMS Agent Host
+    state: started
+  become_method: runas
+  when: >
+    (ansible_facts['distribution_major_version'] == "10"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2019.*"))
+    or
+    (ansible_facts['distribution_major_version'] == "10"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2016.*"))
+    or
+    (ansible_facts['distribution_major_version'] == "6"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2012.*"))
+
+- name: restart SCCM Agent
+  win_service:
+    name: SMS Agent Host
+    state: restarted
+  become_method: runas
+  when: >
+    (ansible_facts['distribution_major_version'] == "10"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2019.*"))
+    or
+    (ansible_facts['distribution_major_version'] == "10"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2016.*"))
+    or
+    (ansible_facts['distribution_major_version'] == "6"
+    and ansible_facts['distribution'] is match("Microsoft Windows Server 2012.*"))
